@@ -1,0 +1,29 @@
+#define TRANSMITTER_PIN 18 // Transmitter Piezo (PWM Output) #define RECEIVER1_PIN 32	// First Receiver Piezo (Analog Input) #define RECEIVER2_PIN 34	// Second Receiver Piezo (Analog Input)
+
+#define PWM_FREQ 1000	// 1 kHz Square Wave Frequency #define PWM_CHANNEL 0		// LEDC Channel
+#define PWM_RES 8	// 8-bit resolution (0-255) #define NUM_SAMPLES 100
+
+void setup() { Serial.begin(115200);
+analogReadResolution(12); // Set ADC to 12-bit (0-4095)
+
+// Setup LEDC PWM for proper square wave generation ledcSetup(PWM_CHANNEL, PWM_FREQ, PWM_RES);
+ledcAttachPin(TRANSMITTER_PIN, PWM_CHANNEL);
+}
+
+void loop() {
+for (int i = 0; i < NUM_SAMPLES; i++) {
+// Generate perfect square wave manually ledcWrite(PWM_CHANNEL, 255); // HIGH state delayMicroseconds(500);	// Adjust based on PWM_FREQ ledcWrite(PWM_CHANNEL, 0);	// LOW state delayMicroseconds(500);
+
+// Read the received signal from both piezo sensors int receiver1Signal = analogRead(RECEIVER1_PIN); int receiver2Signal = analogRead(RECEIVER2_PIN);
+
+// Generate perfect square wave manually for plotting int transmittedSignal = (millis() % 2 == 0) ? 4095 : 0;
+
+// Plot transmitted and both received signals Serial.print(transmittedSignal); // Ideal Square Wave
+ 
+Serial.print(" ");
+Serial.print(receiver1Signal);	// First Receiver Signal Serial.print(" ");
+Serial.println(receiver2Signal); // Second Receiver Signal
+
+delayMicroseconds(200);
+}
+}
